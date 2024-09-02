@@ -2,11 +2,20 @@ const Contact = require("../models/contactModel");
 
 const getContact = async (req, res) => {
   try {
-    const contacts = await Contact.find(); 
-    res.json(contacts); 
+    // Ensure req.user is defined and has an id property
+    if (!req.user || !req.user.id) {
+      res.status(401);
+      throw new Error("User ID not found in request");
+    }
+
+    // Fetch contacts for the user
+    const contacts = await Contact.find({ user_id: req.user.id });
+
+    // Send the contacts in response
+    res.json(contacts);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Failed to fetch contacts' }); 
+    res.status(500).json({ message: 'Failed to fetch contacts' });
   }
 };
 
@@ -19,7 +28,7 @@ const createContact = async (req, res) => {
       return res.status(400).json({ message: "All fields are mandatory" });
     }
 
-    const contact = await Contact.create({ name, email, phone }); 
+    const contact = await Contact.create({ name, email, phone,user_id:req.user.id }); 
     res.status(201).json(contact); 
   } catch (error) {
     console.error(error);

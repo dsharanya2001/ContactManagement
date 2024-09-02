@@ -9,7 +9,9 @@ const app = express();
 
 const port = process.env.PORT || 5001;
 
+
 app.use(express.json());
+
 
 // Ensure these paths are correct
 app.use("/api/contacts", require("./routes/ContactRoutes"));
